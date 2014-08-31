@@ -30,6 +30,7 @@ define([
             top: 'first',
             bottom: 'last'
         },
+        percent: 100,
         postCreate: function() {
             this.inherited(arguments);
             domStyle.set(this.lineNode, 'background-color', this.color);
@@ -41,31 +42,41 @@ define([
             domConstruct.place(this.domNode, this.domNode.parentNode, this.positionHash[this.position]);
             this.inherited(arguments);
         },
-        play: function() {
-            this.endWidth = this.domNode.offsetWidth;
-            fx.chain([
-                this.sideWipeIn({
-                    node: this.lineNode,
-                    duration: this.duration
-                }),
-                baseFx.fadeOut({
-                    node: this.lineNode,
-                    onEnd: lang.hitch(this, function() {
-                        domStyle.set(this.lineNode, 'width', '0');
-                    })
+        play: function(propertyBag) {
+            if (propertyBag && propertyBag.hasOwnProperty('percent')) {
+                 this.percent = propertyBag.percent;
+            }
+            this.startWidth  = this.lineNode.offsetWidth;
+            if (this.percent > 100) {
+                this.startWidth = 1;
+            }
+            this.endWidth = this.domNode.offsetWidth * (this.percent / 100);
+            var swipe = this.sideWipeIn({
+                node: this.lineNode,
+                duration: this.duration
+            });
+            var fade = baseFx.fadeOut({
+                node: this.lineNode,
+                onEnd: lang.hitch(this, function() {
+                    domStyle.set(this.lineNode, 'width', '0');
                 })
-            ]).play();
+            });
+            var anims = [swipe];
+            if (this.percent === 100) {
+                anims.push(fade);
+            }
+            fx.chain(anims).play();
         },
 
         sideWipeIn: function( /*Object*/ args) {
             var node = args.node = dom.byId(args.node),
                 s = node.style;
-                s.opacity = 1;
+            s.opacity = 1;
 
             var anim = baseFx.animateProperty(lang.mixin({
                 properties: {
                     width: {
-                        start: '1',
+                        start: this.startWidth,
                         end: this.endWidth
                     }
                 }

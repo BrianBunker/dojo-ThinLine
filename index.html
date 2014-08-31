@@ -10,7 +10,7 @@
         <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.10compact/js/esri/css/esri.css">
     </head>
     <body>
-        <div id="testNode" style="width:100px;margin:0 auto;border:1px solid #797979;">
+        <div id="testNode" style="width:300px;margin:0 auto;border:1px solid #797979;">
             <div>Demo change color</div>
         </div>
         <br />
@@ -20,6 +20,10 @@
         <br />
         <div id="testNode3" style="width:500px;margin:0 auto;border:1px solid #797979;">
             <div>Demo change top/bottom position</div>
+        </div>
+        <br />
+        <div id="testNode4" style="width:700px;margin:0 auto;border:1px solid #797979;">
+            <div>Demo define percent width</div>
         </div>
         <script type="text/javascript">
             var dojoConfig = {
@@ -53,6 +57,18 @@
                 ttl3.startup();
                 on(document.body, '#testNode3:click', function() {
                     ttl3.play();
+                });
+                var percent = 0;
+                var ttl4 = new ThinTopLine({}).placeAt('testNode4');
+                ttl4.startup();
+                on(document.body, '#testNode4:click', function() {
+                    percent += 20;
+                    if (percent > 100) {
+                        percent = 20;
+                    }
+                    ttl4.play({
+                        percent: percent
+                    });
                 });
             });
         </script>
